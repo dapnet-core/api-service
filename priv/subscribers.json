@@ -1,0 +1,64 @@
+{
+    "_id": "_design/subscribers",
+    "version": 6,
+    "views": {
+        "byId": {
+            "reduce": "_count",
+            "map": "function (doc) {
+                emit(doc._id, 1);
+            }"
+        },
+       "byOwners": {
+            "reduce": "_count",
+            "map": "function (doc) {
+                if (doc.owners) {
+                    doc.owners.forEach(function(owner) {
+                        emit(owner, 1);
+                    })
+                }
+            }"
+        },
+        "byGroup": {
+            "reduce": "_count",
+            "map": "function (doc) {
+                if (doc.groups) {
+                    doc.groups.forEach(function(group) {
+                        emit(group.split('.'));
+                    })
+                }
+            }"
+        }
+    },
+    "shows": {
+        "owners": "function(doc, req) {
+            return {
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(doc.owners)
+            };
+        }"
+    },
+    "lists": {
+      "names": "function() {
+        provides('json', function() {
+          var names = [];
+            while (row = getRow()) {
+              names.push(row.id)
+            }
+            send(JSON.stringify(names));
+          })
+      }",
+      "groups": "function() {
+        provides('json', function() {
+          var groups = [];
+          while (row = getRow()) {
+            groups.push(row.key.join('.'))
+          }
+          send(JSON.stringify(groups));
+        })
+      }"
+    },
+    "filters": {
+        "sync": "function (doc, req) { return doc._id.charAt(0) != '_'; }"
+    },
+    "language": "javascript"
+}

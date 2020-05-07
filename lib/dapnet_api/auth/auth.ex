@@ -1,0 +1,18 @@
+defmodule DapnetApi.Auth do
+  def login(%{"username" => user, "password" => pass} = params) do
+    db = DapnetApi.CouchDB.db("users")
+    case CouchDB.Database.get(db, user) do
+      {:ok, result} ->
+        user = result |> Poison.decode!
+        {hash, user} = user |> Map.pop("password")
+
+        if hash && Comeonin.Bcrypt.checkpw(pass, hash) do
+          user
+        else
+          nil
+        end
+      _ ->
+        nil
+    end
+  end
+end
