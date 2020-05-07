@@ -33,6 +33,8 @@ defmodule DapnetApi.Application do
 
       worker(DapnetApi.Telemetry.Consumer, [], restart: :permanent),
       worker(DapnetApi.Telemetry.Database, [], restart: :permanent),
+
+      worker(DapnetApi.Scheduler, [], restart: :permanent)
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
