@@ -37,10 +37,12 @@ defmodule DapnetApi.Cluster.Discovery do
     Enum.map(nodes, fn {node, params} ->
       host = params["host"]
       task = Task.async(fn ->
-      case HTTPoison.post("#{host}/cluster/discovery", body, [], [
-                recv_timeout: 3000,
-                timeout: 3000
-              ]) do
+      case HTTPoison.post("#{host}/cluster/discovery", body,
+        [{"content-type", "application/json"}],
+        [
+          recv_timeout: 3000,
+          timeout: 3000
+        ]) do
         {:ok, response} ->
           case Poison.decode(response.body) do
             {:ok, data} -> node_data = Map.get(data, node)

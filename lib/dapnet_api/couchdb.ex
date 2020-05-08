@@ -24,14 +24,12 @@ defmodule DapnetApi.CouchDB do
   def handle_call({:auth_node, name, auth_key}, _from, server) do
     case get_node(name, server) do
       {:ok, node} ->
-        IO.inspect node
         if auth_key == Map.get(node, "auth_key") do
           {:reply, true, server}
         else
           {:reply, false, server}
         end
       _ ->
-        IO.inspect "failed to get node #{name}"
         {:reply, false, server}
     end
   end
