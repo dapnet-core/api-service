@@ -23,9 +23,9 @@ defmodule DapnetApiWeb.Router do
     get "/auth/rabbitmq/resource", AuthController, :rabbitmq_resource
     get "/auth/rabbitmq/topic", AuthController, :rabbitmq_topic
 
-    post "/calls", CallController, :calls_create
-    get "/calls", CallController, :calls_list
-    get "/calls/:id", CallController, :calls_show
+    get "/calls", CallController, :list
+    get "/calls/:id", CallController, :show
+    post "/calls", CallController, :create
 
     post "/transmitters/_bootstrap", TransmitterController, :bootstrap
     post "/transmitters/_heartbeat", TransmitterController, :heartbeat

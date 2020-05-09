@@ -16,14 +16,14 @@ defmodule DapnetApi.Call.Database do
           disc_copies: [Node.self()],
         ])
 
-    Mnesia.add_table_index(Calls, :d)
+    Mnesia.add_table_index(Calls, :id)
     {:ok, nil}
   end
 
   def store(call) do
     id = Map.get(call, "id")
     created_on = Map.get(call, "created_on")
-
+  
     transaction = fn ->
       Mnesia.write({Calls, created_on, id, call})
     end
@@ -33,7 +33,7 @@ defmodule DapnetApi.Call.Database do
 
   def read(id) do
     transaction = fn ->
-      Mnesia.read({Calls, id})
+      Mnesia.index_read(Calls, id, :id)
     end
 
     case Mnesia.transaction(transaction) do

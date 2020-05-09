@@ -1,12 +1,32 @@
 defmodule DapnetApiWeb.CallController do
   use DapnetApiWeb, :controller
 
-  #plug :auth_required
+  plug :permission_required, "call.list" when action in [:list]
+  plug :permission_required, "call.show" when action in [:read]
+  plug :permission_required, "call.create" when action in [:create]
 
-  def calls_create(conn, params) do
+  def list(conn, params) do
+    case DapnetApi.Call.Database.list() do
+      nil ->
+      	conn |> put_status(404) |> json(%{"error" => "Not found"})
+      result ->
+        json(conn, result)
+    end
+  end
+
+  def show(conn, %{"id" => id} = params) do
+    case DapnetApi.Call.Database.read(id) do
+      nil ->
+      	conn |> put_status(404) |> json(%{"error" => "Not found"})
+      result ->
+      	json(conn, result)
+    end
+  end
+
+  def create(conn, params) do
     schema = DapnetApi.Call.Schema.call_schema
     call = conn.body_params
-    user = conn.assigns[:login]["user"]["_id"]
+    user = conn.assigns[:login][:user]["_id"]
 
     case ExJsonSchema.Validator.validate(schema, call) do
       :ok ->
@@ -29,24 +49,6 @@ defmodule DapnetApiWeb.CallController do
         |> send_resp(200, json_call)
       {:error, errors} ->
         conn |> put_status(404) |> json(%{"errors" => errors})
-    end
-  end
-
-  def calls_list(conn, params) do
-    case DapnetApi.Call.Database.list() do
-      nil ->
-      	conn |> put_status(404) |> json(%{"error" => "Not found"})
-      result ->
-        json(conn, result)
-    end
-  end
-
-  def calls_show(conn, %{"id" => id} = params) do
-    case DapnetApi.Call.Database.read(id) do
-      nil ->
-      	conn |> put_status(404) |> json(%{"error" => "Not found"})
-      result ->
-      	json(conn, result)
     end
   end
 

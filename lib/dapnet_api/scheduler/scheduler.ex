@@ -14,11 +14,13 @@ defmodule DapnetApi.Scheduler do
 
   def handle_info(:send_time, state) do
     time_call = %{
-      "id" => UUID.uuid1(),
+      "id" => uuid(),
       "protocol" => "pocsag",
       "expires_on" => Timex.now() |> Timex.shift(minutes: 3),
       "priority" => 4,
-      "origin" => "local",
+      "origin" => origin,
+      "created_by" => "core",
+      "created_on" => Timex.now(),
       "message" => %{
         "ric" => 2504,
         "function" => 0,
@@ -37,5 +39,13 @@ defmodule DapnetApi.Scheduler do
 
     Process.send_after(self(), :send_time, @time_interval * 1000)
     {:noreply, state}
+  end
+
+  defp uuid() do
+    UUID.uuid1()
+  end
+
+  defp origin() do
+    System.get_env("NODE_NAME")
   end
 end

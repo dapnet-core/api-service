@@ -5,6 +5,10 @@ defmodule DapnetApi.Auth.Permissions do
 
   def get("admin") do
     %{
+      "call.list" => :all,
+      "call.read" => :all,
+      "call.create" => :all,
+
       "user.list" => :all,
       "user.read" => :all,
       "user.create" => :all,
@@ -47,6 +51,10 @@ defmodule DapnetApi.Auth.Permissions do
 
   def get("suppport") do
     %{
+      "call.list" => :all,
+      "call.read" => :all,
+      "call.create" => :all,
+
       "user.list" => :all,
       "user.read" => :all,
       "user.create" => :all,
@@ -85,6 +93,10 @@ defmodule DapnetApi.Auth.Permissions do
 
   def get("user") do
     %{
+      "call.list" => :if_owner,
+      "call.read" => :if_owner,
+      "call.create" => :all,
+
       "user.list" => :all,
       "user.read" => :if_owner,
       "user.update" => :if_owner,
