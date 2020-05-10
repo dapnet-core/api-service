@@ -14,8 +14,6 @@ defmodule DapnetApiWeb.Plugs.Auth do
   def permission_required(conn, action) do
     case conn.assigns[:login] do
       %{:permissions => permissions} ->
-        IO.inspect(permissions)
-        IO.inspect(action)
         if Map.get(permissions, action) == :all do
           conn
         else

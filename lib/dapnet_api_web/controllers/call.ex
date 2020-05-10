@@ -23,9 +23,8 @@ defmodule DapnetApiWeb.CallController do
     end
   end
 
-  def create(conn, params) do
+  def create(conn, call) do
     schema = DapnetApi.Call.Schema.call_schema
-    call = conn.body_params
     user = conn.assigns[:login][:user]["_id"]
 
     case ExJsonSchema.Validator.validate(schema, call) do
@@ -48,7 +47,7 @@ defmodule DapnetApiWeb.CallController do
         |> put_resp_content_type("application/json")
         |> send_resp(200, json_call)
       {:error, errors} ->
-        conn |> put_status(404) |> json(%{"errors" => errors})
+        conn |> put_status(400) |> json(%{"errors" => errors})
     end
   end
 

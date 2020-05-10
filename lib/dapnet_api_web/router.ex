@@ -27,11 +27,19 @@ defmodule DapnetApiWeb.Router do
     get "/calls/:id", CallController, :show
     post "/calls", CallController, :create
 
+    get "/transmitters", TransmitterController, :list
+    # TODO: change path to _map
+    get "/transmitters/map", TransmitterController, :map
+    put "/transmitters", TransmitterController, :create
+    delete "/transmitters/:id", TransmitterController, :delete
+    get "/transmitters/_count", TransmitterController, :count
+    get "/transmitters/_my", TransmitterController, :my
+    get "/transmitters/_my_count", TransmitterController, :my_count
+    get "/transmitters/_names" , TransmitterController, :list_names
+    get "/transmitters/_groups", TransmitterController, :list_groups
+    get "/transmitters/:id", TransmitterController, :show
     post "/transmitters/_bootstrap", TransmitterController, :bootstrap
     post "/transmitters/_heartbeat", TransmitterController, :heartbeat
-    get "/transmitters", TransmitterController, :transmitters_list
-    get "/transmitters/_map", TransmitterController, :transmitters_map
-    get "/transmitters/:id", TransmitterController, :transmitters_show
   end
 
   # Enables LiveDashboard only for development
