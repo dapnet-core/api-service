@@ -6,7 +6,7 @@ defmodule DapnetApi.Auth do
         user = result |> Poison.decode!
         {hash, user} = user |> Map.pop("password")
 
-        if hash && Comeonin.Bcrypt.checkpw(pass, hash) do
+        if hash && Bcrypt.verify_pass(pass, hash) do
           user
         else
           nil

@@ -100,7 +100,7 @@ defmodule DapnetApiWeb.AuthController do
             user = result |> Poison.decode!
             {hash, user} = user |> Map.pop("password")
 
-            if hash && Comeonin.Bcrypt.checkpw(pass, hash) do
+            if hash && Bcrypt.verify_pass(pass, hash) do
               is_thirdparty = Map.get(user, "roles", [])
               |> Enum.any?(fn role -> String.starts_with?(role, "thirdparty.") end)
 

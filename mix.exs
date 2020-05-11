@@ -40,12 +40,11 @@ defmodule DapnetApi.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:amqp, "~> 1.4.2"},
-      {:httpoison, "~> 1.1.1"},
+      {:httpoison, "~> 1.6.2"},
       {:timex, "~> 3.1"},
       {:couchdb, github: "7h0ma5/elixir-couchdb"},
-      {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 1.0"},
-      {:ex_json_schema, "~> 0.5.4"},
+      {:bcrypt_elixir, "~> 2.2"},
+      {:ex_json_schema, "~> 0.7"},
       {:elixir_uuid, "~> 1.2"},
       {:gproc, "~> 0.8.0"}
     ]

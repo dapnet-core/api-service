@@ -40,6 +40,9 @@ defmodule DapnetApiWeb.Router do
     get "/transmitters/:id", TransmitterController, :show
     post "/transmitters/_bootstrap", TransmitterController, :bootstrap
     post "/transmitters/_heartbeat", TransmitterController, :heartbeat
+
+    get "/api/status", StatusController, :status
+    get "/api/statistics", StatisticsController, :statistics
   end
 
   # Enables LiveDashboard only for development
