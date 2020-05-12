@@ -23,6 +23,10 @@ defmodule DapnetApi.Transmitter.Database do
 
   def list_connected() do
     :ets.tab2list(:transmitters)
+    |> Enum.filter(fn {key, val} ->
+      last_seen = Map.get(val, "last_seen")
+      last_seen != nil && Timex.diff(last_seen, Timex.now(), :minutes) < 3
+    end)
     |> Enum.map(fn {key, val} -> val end)
   end
 
