@@ -1,4 +1,4 @@
-# DapnetApi
+# Dapnet
 
 To start your Phoenix server:
 

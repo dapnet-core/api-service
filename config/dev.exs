@@ -1,12 +1,27 @@
 use Mix.Config
 
+database_password =
+  System.get_env("POSTGRES_PASSWORD") ||
+    raise """
+    environment variable POSTGRES_PASSWORD is missing.
+    """
+
+# Configure your database
+config :dapnet, Dapnet.Repo,
+  username: "postgres",
+  password: database_password,
+  database: "dapnet_dev",
+  hostname: "postgres",
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :dapnet_api, DapnetApiWeb.Endpoint,
+config :dapnet, DapnetWeb.Endpoint,
   http: [port: 80],
   debug_errors: true,
   code_reloader: true,

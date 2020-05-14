@@ -7,19 +7,22 @@
 # General application configuration
 use Mix.Config
 
+config :dapnet,
+  ecto_repos: [Dapnet.Repo]
+
 # Configures the endpoint
-config :dapnet_api, DapnetApiWeb.Endpoint,
+config :dapnet, DapnetWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "GOk/2pbQQKxjAypc6di6KaOm0tnD8d39q7wwqoTZKpemeNBBRWXoURMpOg32/UUF",
-  render_errors: [view: DapnetApiWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: DapnetApi.PubSub,
-  live_view: [signing_salt: "PPRP9iCm"],
+  secret_key_base: "6pnkZMQKDsXpSeeBgAbj57iToVlx/I9xi0Gp0vkK19wxyjZVf9WhRNYVGyoxbSRK",
+  render_errors: [view: DapnetWeb.ErrorView, accepts: ~w(json), layout: false],
+  pubsub_server: Dapnet.PubSub,
+  live_view: [signing_salt: "G8lmzTfy"],
   http: [dispatch: [
-	{:_, [
-     {"/telemetry", DapnetApi.Telemetry.Websocket, :all},
-     {"/telemetry/transmitters/:id", DapnetApi.Telemetry.Websocket, :transmitter},
-     {"/telemetry/nodes/:id", DapnetApi.Telemetry.Websocket, :node},
-     {:_, Phoenix.Endpoint.Cowboy2Handler, {DapnetApiWeb.Endpoint, []}}
+    {:_, [
+     {"/telemetry", Dapnet.Telemetry.Websocket, :all},
+     {"/telemetry/transmitters/:id", Dapnet.Telemetry.Websocket, :transmitter},
+     {"/telemetry/nodes/:id", Dapnet.Telemetry.Websocket, :node},
+     {:_, Phoenix.Endpoint.Cowboy2Handler, {DapnetWeb.Endpoint, []}}
    ]}]]
 
 # Configures Elixir's Logger
@@ -30,7 +33,7 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :dapnet_api, DapnetApi.Cluster.Discovery,
+config :dapnet, Dapnet.Cluster.Discovery,
   seed: %{
     "db0sda-dc1" => %{
       "host" => "dapnetdc1.db0sda.ampr.org"
