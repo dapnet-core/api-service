@@ -57,9 +57,12 @@ defmodule Dapnet.Transmitter.RabbitMQ do
           |> Enum.into(%{})
 
           heartbeat = Map.merge(heartbeat, dates)
+          transmitter = Dapnet.Transmitter.changeset(
+            %Dapnet.Transmitter{}, heartbeat
+          )
 
           Dapnet.Repo.insert!(
-            heartbeat,
+            transmitter,
             on_conflict: :replace_all,
             conflict_target: :id
           )
