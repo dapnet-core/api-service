@@ -58,32 +58,65 @@ defmodule Dapnet.Scheduler.Rubrics do
     IO.puts("Sending " <> Map.get(rubric, "_id"))
 
     messages = Map.get(rubric, "content")
+    |> Enum.with_index(1)
     |> Enum.each(&send_call(rubric, &1))
   end
 
-  def send_call(rubric, message) do
+  def send_call(rubric, {message, news_id}) do
+    create_skyper_call(rubric, message, news_id)
+    |> Dapnet.Call.Dispatcher.dispatch()
+
+    create_news_call(rubric, message, news_id)
+    |> Dapnet.Call.Dispatcher.dispatch()
+  end
+
+  def create_news_call(rubric, message, news_id) do
+    rubric_id = Map.get(rubric, "number")
+
+    create_call(rubric, message)
+    |> Map.merge(%{
+      "recipients" => %{"pocsag" => [%{
+        "ric" => 1000 + rubric_id,
+        "function" => Map.get(rubric, "function", 3)
+      }]},
+      "data" => Map.get(message, "data")
+    })
+  end
+
+  def create_skyper_call(rubric, message, news_id) do
+    rubric_id = Map.get(rubric, "number")
+
+    create_call(rubric, message)
+    |> Map.merge(%{
+      "recipients" => %{"pocsag" => [%{
+        "ric" => 4520,
+        "function" => Map.get(rubric, "function", 3)
+      }]},
+      "data" => Map.get(message, "data")
+        |> encode_skyper_news(rubric_id, news_id)
+    })
+  end
+
+  def create_call(rubric, message) do
     origin = System.get_env("NODE_NAME")
-    data = Map.get(message, "data")
 
     call = %{
       "id" => UUID.uuid1(),
-      "data" => data,
       "priority" => Map.get(rubric, "default_priority", 2),
       "origin" => origin,
       "local" => true,
       "created_by" => "core-scheduler-rubrics",
       "created_at" => Timex.now(),
-      "recipients" => %{"pocsag" => [%{
-        "ric" => 4512,
-        "function" => Map.get(rubric, "function", 3)
-      }]},
       "distribution" => %{
         "transmitters" => Map.get(rubric, "transmitters", []),
         "transmitter_groups" => Map.get(rubric, "transmitter_groups", [])
       }
     }
+  end
 
-    Dapnet.Call.Dispatcher.dispatch(call)
+  def encode_skyper_news(data, rubric_id, news_id) do
+    data = to_charlist(data) |> Enum.map(fn char -> char + 1 end)
+    ([rubric_id + 0x1f] ++ [news_id + 0x20] ++ data) |> to_string
   end
 
   def get_rubric(id) do
