@@ -1,15 +1,19 @@
 defmodule DapnetWeb.CallController do
   use DapnetWeb, :controller
 
+  require Ecto.Query
   alias Dapnet.Call
   alias Dapnet.Repo
 
-#  plug :permission_required, "call.list" when action in [:list]
-#  plug :permission_required, "call.show" when action in [:read]
-#  plug :permission_required, "call.create" when action in [:create]
+  plug :permission_required, "call.list" when action in [:list]
+  plug :permission_required, "call.show" when action in [:read]
+  plug :permission_required, "call.create" when action in [:create]
 
   def index(conn, params) do
-    calls = Repo.all(Call)
+    calls = Call
+    |> Ecto.Query.order_by(desc: :created_at)
+    |> Ecto.Query.limit(100)
+    |> Repo.all()
     json(conn, calls)
   end
 
