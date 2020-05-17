@@ -48,6 +48,17 @@ config :dapnet, Dapnet.Cluster.Discovery,
     }
   }
 
+config :dapnet, Dapnet.Scheduler,
+  jobs: [
+    {"*/1 * * * *", {Dapnet.Cluster.Discovery, :update, []}},
+    {"*/2 * * * *", {Dapnet.Cluster.RabbitMQ, :update, []}},
+    {"*/2 * * * *", {Dapnet.Cluster.Replication, :update, []}},
+
+    {"*/10 * * * *", {Dapnet.Scheduler.Time, :send_calls, []}},
+    {"0 * * * *", {Dapnet.Scheduler.Rubrics, :update_queue, []}},
+    {"* * * * *", {Dapnet.Scheduler.Rubrics, :run_queue, []}},
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

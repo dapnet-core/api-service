@@ -7,6 +7,10 @@ defmodule Dapnet.Cluster.RabbitMQ do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 
+  def update() do
+    GenServer.call(__MODULE__, :update)
+  end
+
   def publish_call(transmitter, data) do
     GenServer.call(__MODULE__, {:publish_call, transmitter, data})
   end
@@ -32,8 +36,6 @@ defmodule Dapnet.Cluster.RabbitMQ do
         Logger.info("Creating dapnet.telemetry exchange.")
         :ok = Exchange.topic(chan, "dapnet.telemetry", durable: true)
 
-        Process.send_after(self(), :federation, 5000)
-
         {:noreply, chan}
       _ ->
         Logger.error("Could not connect to RabbitMQ.")
@@ -42,7 +44,7 @@ defmodule Dapnet.Cluster.RabbitMQ do
     end
   end
 
-  def handle_info(:federation, state) do
+  def handle_call(:update, _from, state) do
     Dapnet.Cluster.Discovery.reachable_nodes() |> Enum.each(fn {node, params} ->
       case federation_get(node) do
         {:ok, %HTTPoison.Response{status_code: 200}} ->
@@ -69,8 +71,7 @@ defmodule Dapnet.Cluster.RabbitMQ do
         Logger.error("Failed to query DAPNET federation policy.")
     end
 
-    Process.send_after(self(), :federation, 60000)
-    {:noreply, state}
+    {:reply, :ok, state}
   end
 
   def federation_create(node, host) do

@@ -4,14 +4,13 @@ defmodule Dapnet.Cluster.Discovery do
 
   def nodes, do: GenServer.call(__MODULE__, :nodes)
   def reachable_nodes, do: GenServer.call(__MODULE__, :reachable_nodes)
+  def update, do: GenServer.call(__MODULE__, :update, 10000)
 
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
 
   def init(_opts) do
-    Process.send_after(self(), :update, 1000)
-
     name = System.get_env("NODE_NAME")
     Logger.info("Node name: #{name}")
 
@@ -20,23 +19,23 @@ defmodule Dapnet.Cluster.Discovery do
     |> Enum.map(fn {node, params} -> {node,
          Map.merge(params, %{"last_seen" => nil, "reachable" => false})}
        end)
-    |> Map.new
+    |> Map.new()
 
     Logger.info("Initial node list: #{inspect nodes}")
 
     {:ok, nodes}
   end
 
-  def handle_info(:update, nodes) do
+  def handle_call(:update, _from, nodes) do
     Logger.info("Starting node discovery.")
     body = %{
       name: System.get_env("NODE_NAME"),
       auth_key: System.get_env("NODE_AUTHKEY")
     } |> Poison.encode!
 
-    Enum.map(nodes, fn {node, params} ->
+    nodes = Task.async_stream(nodes, fn {node, params} ->
       host = params["host"]
-      task = Task.async(fn ->
+
       case HTTPoison.post("#{host}/cluster/discovery", body,
         [{"content-type", "application/json"}],
         [
@@ -62,10 +61,10 @@ defmodule Dapnet.Cluster.Discovery do
           {node, %{params | "reachable" => false}}
       end
     end)
-    end)
+    |> Enum.map(fn {:ok, node} -> node end)
+    |> Map.new()
 
-    Process.send_after(self(), :update, 60000)
-    {:noreply, nodes}
+    {:reply, :ok, nodes}
   end
 
   def handle_info({ref, result}, nodes) when is_reference(ref) do

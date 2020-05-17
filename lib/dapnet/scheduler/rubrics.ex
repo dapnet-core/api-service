@@ -1,10 +1,19 @@
 defmodule Dapnet.Scheduler.Rubrics do
+  use GenServer
 
-  def init() do
-    :ets.new(:rubric_queue, [:ordered_set, :public, :named_table])
+  def update_queue, do: GenServer.call(__MODULE__, :update_queue, 10000)
+  def run_queue, do: GenServer.call(__MODULE__, :run_queue, 30000)
+
+  def start_link() do
+    GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 
-  def update_queue() do
+  def init(_args) do
+    :ets.new(:rubric_queue, [:ordered_set, :public, :named_table])
+    {:ok, nil}
+  end
+
+  def handle_call(:update_queue, _from, state) do
     IO.puts("Updating Cyclic Rubrics Queue")
 
     options = %{"include_docs" => true, "reduce" => "false"}
@@ -25,9 +34,11 @@ defmodule Dapnet.Scheduler.Rubrics do
     else
       e -> IO.inspect(e)
     end
+
+    {:reply, :ok, state}
   end
 
-  def run_queue() do
+  def handle_call(:run_queue, _from, state) do
     now = System.system_time(:second)
 
     queue()
@@ -45,16 +56,18 @@ defmodule Dapnet.Scheduler.Rubrics do
         end
       _ -> nil
     end)
+
+    {:reply, :ok, state}
   end
 
-  def queue() do
+  defp queue() do
     Stream.unfold(:ets.first(:rubric_queue), fn
       :"$end_of_table" -> nil
       key -> {key, :ets.next(:rubric_queue, key)}
     end)
   end
 
-  def send_rubric(rubric) do
+  defp send_rubric(rubric) do
     IO.puts("Sending " <> Map.get(rubric, "_id"))
 
     messages = Map.get(rubric, "content")
@@ -83,7 +96,7 @@ defmodule Dapnet.Scheduler.Rubrics do
     })
   end
 
-  def create_skyper_call(rubric, message, news_id) do
+  defp create_skyper_call(rubric, message, news_id) do
     rubric_id = Map.get(rubric, "number")
 
     create_call(rubric, message)
@@ -97,7 +110,7 @@ defmodule Dapnet.Scheduler.Rubrics do
     })
   end
 
-  def create_call(rubric, message) do
+  defp create_call(rubric, message) do
     origin = System.get_env("NODE_NAME")
 
     call = %{
@@ -114,12 +127,12 @@ defmodule Dapnet.Scheduler.Rubrics do
     }
   end
 
-  def encode_skyper_news(data, rubric_id, news_id) do
+  defp encode_skyper_news(data, rubric_id, news_id) do
     data = to_charlist(data) |> Enum.map(fn char -> char + 1 end)
     ([rubric_id + 0x1f] ++ [news_id + 0x20] ++ data) |> to_string
   end
 
-  def get_rubric(id) do
+  defp get_rubric(id) do
     result = Dapnet.CouchDB.db("rubrics")
     |> CouchDB.Database.get(id)
 
@@ -131,7 +144,7 @@ defmodule Dapnet.Scheduler.Rubrics do
     end
   end
 
-  def queue_rubric(rubric) do
+  defp queue_rubric(rubric) do
     case next_cycle(rubric) do
       nil -> nil
       next ->
@@ -142,7 +155,7 @@ defmodule Dapnet.Scheduler.Rubrics do
     end
   end
 
-  def next_cycle(rubric) do
+  defp next_cycle(rubric) do
     if Map.get(rubric, "cyclic_transmit") do
       interval = Map.get(rubric, "cyclic_transmit_interval", 360)
 

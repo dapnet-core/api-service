@@ -8,17 +8,18 @@ defmodule Dapnet.Cluster.Replication do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
 
+  def update() do
+    GenServer.call(__MODULE__, :update)
+  end
+
   def init(_opts) do
-    Process.send_after(self(), :update, 10000)
     {:ok, nil}
   end
 
-  def handle_info(:update, state) do
+  def handle_call(:update, _from, state) do
     Dapnet.Cluster.Discovery.reachable_nodes()
     |> Enum.filter(fn {_, params} -> Map.get(params, "couchdb") != nil end)
     |> Enum.each(fn {node, params} -> Dapnet.Cluster.CouchDB.sync_with(node, params) end)
-
-    Process.send_after(self(), :update, 60000)
-    {:noreply, state}
+    {:reply, :ok, state}
   end
 end

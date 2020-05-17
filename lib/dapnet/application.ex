@@ -6,7 +6,7 @@ defmodule Dapnet.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
+    import Supervisor.Spec, warn: false
 
     children = [
       # Start the Ecto repository
@@ -34,7 +34,8 @@ defmodule Dapnet.Application do
       worker(Dapnet.Telemetry.Consumer, [], restart: :permanent),
       worker(Dapnet.Telemetry.Database, [], restart: :permanent),
 
-      worker(Dapnet.Scheduler, [], restart: :permanent)
+      worker(Dapnet.Scheduler.Rubrics, [], restart: :permanent),
+      worker(Dapnet.Scheduler, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -44,6 +44,7 @@ defmodule Dapnet.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:amqp, "~> 1.4.2"},
       {:httpoison, "~> 1.6.2"},
+      {:quantum, "~> 2.4"},
       {:timex, "~> 3.1"},
       {:couchdb, github: "7h0ma5/elixir-couchdb"},
       {:bcrypt_elixir, "~> 2.2"},
