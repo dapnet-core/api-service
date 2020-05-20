@@ -49,7 +49,18 @@ defmodule Dapnet.Scheduler.Rubrics do
   end
 
   def process_change({:ok, data}) do
-    IO.inspect(data)
+    case data do
+      %{
+        "changes" => changes,
+        "doc" => news,
+      } ->
+        if rubric = get_rubric(Map.get(news, "_id")) do
+          send_news(rubric, news)
+          queue_rubric(rubric)
+        end
+      e ->
+        IO.inspect(e)
+    end
   end
 
   def process_change(_error) do
@@ -102,9 +113,10 @@ defmodule Dapnet.Scheduler.Rubrics do
     |> Enum.each(fn
       {_time, id} = key ->
         :ets.delete(:rubric_queue, key)
-        rubric = get_rubric(id)
-        if rubric do
-          send_news(rubric)
+        if rubric = get_rubric(id) do
+          if news = get_news(id) do
+            send_news(rubric, news)
+          end
           queue_rubric(rubric)
         end
       _ -> nil
@@ -120,18 +132,16 @@ defmodule Dapnet.Scheduler.Rubrics do
     end)
   end
 
-  defp send_news(rubric) do
+  defp send_news(rubric, news) do
     id =  Map.get(rubric, "_id")
     IO.puts("Sending " <> id)
 
-    if news = get_news(id) do
-      messages = Map.get(news, "items")
-      |> Enum.with_index(1)
-      |> Enum.filter(fn {item, _} ->
-        item != nil && Map.get(item, "data")
-      end)
-      |> Enum.each(&send_call(rubric, &1))
-    end
+    messages = Map.get(news, "items")
+    |> Enum.with_index(1)
+    |> Enum.filter(fn {item, _} ->
+      item != nil && Map.get(item, "data")
+    end)
+    |> Enum.each(&send_call(rubric, &1))
   end
 
   def send_call(rubric, {message, news_id}) do
@@ -139,6 +149,7 @@ defmodule Dapnet.Scheduler.Rubrics do
     |> Dapnet.Call.Dispatcher.dispatch()
 
     create_news_call(rubric, message, news_id)
+    |> IO.inspect
     |> Dapnet.Call.Dispatcher.dispatch()
   end
 
