@@ -52,7 +52,7 @@ config :dapnet, Dapnet.Scheduler,
   jobs: [
     {"*/1 * * * *", {Dapnet.Cluster.Discovery, :update, []}},
     {"*/2 * * * *", {Dapnet.Cluster.RabbitMQ, :update, []}},
-    {"*/2 * * * *", {Dapnet.Cluster.Replication, :update, []}},
+    {"*/2 * * * *", {Dapnet.Cluster.CouchDB, :replicate, []}},
 
     {"*/10 * * * *", {Dapnet.Scheduler.Time, :send_calls, []}},
     {"*/2 * * * *", {Dapnet.Scheduler.Rubrics, :update_queue, []}},

@@ -24,7 +24,6 @@ defmodule Dapnet.Application do
       worker(Dapnet.Cluster.RabbitMQ, [], restart: :permanent),
       worker(Dapnet.Cluster.Discovery, [], restart: :permanent),
       worker(Dapnet.Cluster.CouchDB, [], restart: :permanent),
-      worker(Dapnet.Cluster.Replication, [], restart: :permanent),
 
       worker(Dapnet.Call.RabbitMQ, [], restart: :permanent),
       worker(Dapnet.Call.Dispatcher, [], restart: :permanent),
