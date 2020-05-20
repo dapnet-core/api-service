@@ -21,5 +21,6 @@ defmodule Dapnet.Call do
     call
     |> cast(attrs, [:id, :data, :priority, :local, :origin, :created_by, :created_at, :expires_at, :recipients, :distribution])
     |> validate_required([:id, :data, :priority, :local, :origin, :created_by, :created_at, :recipients, :distribution])
+    |> unique_constraint(:id, name: :calls_pkey)
   end
 end

@@ -3,7 +3,7 @@ defmodule Dapnet.Cluster.CouchDB do
   require Logger
 
   @mgmt_databases ["_users", "_replicator", "_global_changes"]
-  @databases ["users", "transmitters", "subscribers", "rubrics", "nodes"]
+  @databases ["users", "transmitters", "subscribers", "rubrics", "news", "nodes"]
 
   def sync_with(node, params), do: GenServer.cast(__MODULE__, {:sync_with, node, params})
   def db(name), do: GenServer.call(__MODULE__, {:db, name})

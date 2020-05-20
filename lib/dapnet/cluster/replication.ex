@@ -2,8 +2,7 @@ defmodule Dapnet.Cluster.Replication do
   use GenServer
   require Logger
 
-  @databases ["users", "transmitters", "rubrics", "nodes"]
-
+  @databases ["users", "transmitters", "subscribers", "rubrics", "news", "nodes"]
   def start_link do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end

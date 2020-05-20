@@ -24,6 +24,7 @@ defmodule DapnetWeb.Router do
     get "/auth/rabbitmq/topic", AuthController, :rabbitmq_topic
 
     get "/calls", CallController, :index
+    get "/calls/_count", CallController, :count
     get "/calls/:id", CallController, :show
     post "/calls", CallController, :create
     delete "/calls/:id", CallController, :delete
@@ -42,11 +43,23 @@ defmodule DapnetWeb.Router do
     post "/transmitters/_bootstrap", TransmitterController, :bootstrap
     post "/transmitters/_heartbeat", TransmitterController, :heartbeat
 
+    get "/rubrics", RubricController, :list
+    put "/rubrics", RubricController, :create
+    delete "/rubrics/:id", RubricController, :delete
+    get "/rubrics/_count", RubricController, :count
+    get "/rubrics/_my", RubricController, :my
+    get "/rubrics/_my_count", RubricController, :my_count
+    get "/rubrics/_names", RubricController, :list_names
+    get "/rubrics/:id", RubricController, :show
+
+    get "/rubrics/:rubric_id/news", NewsController, :list
+    get "/rubrics/:rubric_id/news/:id", NewsController, :show
+    put "/rubrics/:rubric_id/news", NewsController, :create
+    put "/rubrics/:rubric_id/news/:id", NewsController, :update
+
     get "/api/status", StatusController, :status
     get "/api/statistics", StatisticsController, :statistics
   end
-
-
 
   # Enables LiveDashboard only for development
   #

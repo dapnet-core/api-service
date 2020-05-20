@@ -1,9 +1,9 @@
 defmodule DapnetWeb.TransmitterController do
   use DapnetWeb, :controller
+  use DapnetWeb.Plugs.Database, name: "transmitters"
 
   alias Dapnet.Repo
   alias Dapnet.Transmitter
-  alias CouchDB.Database
 
   action_fallback DapnetWeb.FallbackController
 
@@ -13,24 +13,6 @@ defmodule DapnetWeb.TransmitterController do
   plug :permission_required, "transmitter.update" when action in [:update]
   plug :permission_required, "transmitter.delete" when action in [:delete]
   plug :permission_required, "transmitter_groups.list" when action in [:list_groups]
-
-  defp db() do
-    Dapnet.CouchDB.db("transmitters")
-  end
-
-  defp db_view(name, options \\ %{}) do
-    result = Database.view(db(), "transmitters", name, options)
-    with {:ok, result} <- result do
-      Jason.decode(result)
-    end
-  end
-
-  defp db_list(name, view, options \\ %{}) do
-    result = Database.list(db(), "transmitters", name, view, options)
-    with {:ok, result} <- result do
-      Jason.decode(result)
-    end
-  end
 
   def list(conn, _params) do
     options = %{"include_docs" => true, "limit" => 20, "reduce" => "false"}
@@ -53,8 +35,8 @@ defmodule DapnetWeb.TransmitterController do
   end
 
   def show(conn, %{"id" => id} = params) do
-    with {:ok, transmitter} <- Database.get(db(), id) do
-      transmitter = transmitter |> Jason.decode! |> update_transmitter(id)
+    with {:ok, transmitter} <- db_get(id) do
+      transmitter = update_transmitter(transmitter, id)
       json(conn, transmitter)
     end
   end

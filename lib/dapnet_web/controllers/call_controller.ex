@@ -22,6 +22,11 @@ defmodule DapnetWeb.CallController do
     json(conn, call)
   end
 
+  def count(conn, _params) do
+    count = Repo.aggregate(Call, :count, :id)
+    json(conn, %{"count": count})
+  end
+
   def create(conn, call) do
     user = conn.assigns[:login][:user]["_id"]
     schema = Dapnet.Call.Schema.call_schema

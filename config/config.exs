@@ -55,7 +55,7 @@ config :dapnet, Dapnet.Scheduler,
     {"*/2 * * * *", {Dapnet.Cluster.Replication, :update, []}},
 
     {"*/10 * * * *", {Dapnet.Scheduler.Time, :send_calls, []}},
-    {"0 * * * *", {Dapnet.Scheduler.Rubrics, :update_queue, []}},
+    {"*/2 * * * *", {Dapnet.Scheduler.Rubrics, :update_queue, []}},
     {"* * * * *", {Dapnet.Scheduler.Rubrics, :run_queue, []}},
   ]
 

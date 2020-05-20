@@ -1,0 +1,16 @@
+{
+  "_id": "_design/news",
+  "version": 2,
+  "views": {
+    "byId": {
+      "reduce": "_count",
+      "map": "function (doc) {
+        emit(doc._id, null);
+      }"
+    }
+  },
+  "language": "javascript",
+  "filters": {
+    "sync": "function (doc, req) { return doc._id.charAt(0) != '_'; }"
+  }
+}
