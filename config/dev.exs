@@ -1,15 +1,9 @@
 use Mix.Config
 
-database_password =
-  System.get_env("POSTGRES_PASSWORD") ||
-    raise """
-    environment variable POSTGRES_PASSWORD is missing.
-    """
-
 # Configure your database
 config :dapnet, Dapnet.Repo,
   username: "postgres",
-  password: database_password,
+  password: System.fetch_env!("POSTGRES_PASSWORD"),
   database: "dapnet_dev",
   hostname: "postgres",
   show_sensitive_data_on_connection_error: true,
