@@ -124,12 +124,13 @@ defmodule Dapnet.Scheduler.Rubrics do
     id =  Map.get(rubric, "_id")
     IO.puts("Sending " <> id)
 
-    with {:ok, news} <- get_news(id) do
+    if news = get_news(id) do
       messages = Map.get(news, "items")
       |> Enum.with_index(1)
+      |> Enum.filter(fn {item, _} ->
+        item != nil && Map.get(item, "data")
+      end)
       |> Enum.each(&send_call(rubric, &1))
-    else
-      _ -> nil
     end
   end
 

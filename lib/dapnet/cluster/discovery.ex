@@ -61,7 +61,7 @@ defmodule Dapnet.Cluster.Discovery do
   end
 
   def handle_info(%HTTPoison.AsyncEnd{:id => id}, {nodes, requests}) do
-    {node, requests} = Map.pop(requests, id)
+    {node_name, requests} = Map.pop(requests, id)
     {:noreply, {nodes, requests}}
   end
 
@@ -89,7 +89,6 @@ defmodule Dapnet.Cluster.Discovery do
 
           if node_data do
             Logger.info("Reached #{node_name}!")
-            IO.inspect(node_data)
             Map.put(nodes, node_name, node_data)
           else
             Logger.warn("Could not read response from #{node_name}!")
