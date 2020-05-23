@@ -18,8 +18,9 @@ defmodule DapnetWeb.NewsController do
     end
   end
 
-  def create(conn, news, %{"rubric_id" => rubric_id} = params) do
+  def create(conn, params) do
     user = conn.assigns[:login][:user]["_id"]
+    {rubric_id, news} = Map.pop!(params, "rubric_id")
 
     news = if Map.has_key?(news, "_rev") do
       news

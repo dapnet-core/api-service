@@ -87,13 +87,12 @@ defmodule Dapnet.Scheduler.Rubrics do
 
     with {:ok, result} <- result,
          {:ok, result} <- Jason.decode(result) do
-
       :ets.delete_all_objects(:rubric_queue)
 
       Map.get(result, "rows")
       |> Enum.each(fn row ->
-        doc = Map.get(row, "doc")
-        queue_rubric(doc)
+        Map.get(row, "doc")
+        |> queue_rubric()
       end)
     else
       e -> IO.inspect(e)
@@ -133,9 +132,6 @@ defmodule Dapnet.Scheduler.Rubrics do
   end
 
   defp send_news(rubric, news) do
-    id =  Map.get(rubric, "_id")
-    IO.puts("Sending " <> id)
-
     messages = Map.get(news, "items")
     |> Enum.with_index(1)
     |> Enum.filter(fn {item, _} ->
@@ -149,7 +145,6 @@ defmodule Dapnet.Scheduler.Rubrics do
     |> Dapnet.Call.Dispatcher.dispatch()
 
     create_news_call(rubric, message, news_id)
-    |> IO.inspect
     |> Dapnet.Call.Dispatcher.dispatch()
   end
 
