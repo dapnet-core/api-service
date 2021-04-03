@@ -42,6 +42,14 @@ defmodule DapnetWeb.Router do
     get "/transmitters/:id", TransmitterController, :show
     post "/transmitters/_bootstrap", TransmitterController, :bootstrap
     post "/transmitters/_heartbeat", TransmitterController, :heartbeat
+    
+    get "/users", UserController, :list
+    put "/users", UserController, :create
+    get "/users/_usernames", UserController, :list_usernames
+    get "/users/_count", UserController, :count
+    get "/users/:id/avatar.jpg", UserController, :avatar
+    get "/users/:id", UserController, :show
+    delete "/users/:id", UserController, :delete
 
     get "/rubrics", RubricController, :list
     put "/rubrics", RubricController, :create

@@ -12,6 +12,10 @@ defmodule Dapnet.Transmitter.Schema do
         "owners"
       ],
       "properties" => %{
+        "_id" => %{
+          "type" => "string",
+          "pattern" => "^[a-z0-9]+$"
+        },
         "enabled" => %{"type" => "boolean"},
         "auth_key" => %{"type" => "string"},
         "timeslots" => %{

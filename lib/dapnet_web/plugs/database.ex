@@ -32,6 +32,10 @@ defmodule DapnetWeb.Plugs.Database do
           Jason.decode(result)
         end
       end
+      
+      def db_get_attachment(id, attm) do
+        Database.get_attachment(db(), id, attm)
+      end
     end
   end
 end

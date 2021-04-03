@@ -10,9 +10,11 @@ defmodule DapnetWeb.CallController do
   plug :permission_required, "call.create" when action in [:create]
 
   def index(conn, params) do
+    limit = Map.get(params, "limit", 20)
+
     calls = Call
     |> Ecto.Query.order_by(desc: :created_at)
-    |> Ecto.Query.limit(100)
+    |> Ecto.Query.limit(20)
     |> Repo.all()
     json(conn, calls)
   end

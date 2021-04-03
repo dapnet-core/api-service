@@ -59,7 +59,7 @@ defmodule DapnetWeb.TransmitterController do
           |> Map.put("updated_at", Timex.now())
           |> Map.put("updated_by", user)
         else
-          transmitter = transmitter
+          transmitter
           |> Map.update("_id", nil, &String.trim/1)
           |> Map.update("_id", nil, &String.downcase/1)
           |> Map.put("created_at", Timex.now())
