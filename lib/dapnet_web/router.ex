@@ -53,18 +53,28 @@ defmodule DapnetWeb.Router do
 
     get "/rubrics", RubricController, :list
     put "/rubrics", RubricController, :create
-    delete "/rubrics/:id", RubricController, :delete
     get "/rubrics/_count", RubricController, :count
     get "/rubrics/_my", RubricController, :my
     get "/rubrics/_my_count", RubricController, :my_count
     get "/rubrics/_names", RubricController, :list_names
     get "/rubrics/:id", RubricController, :show
+    delete "/rubrics/:id", RubricController, :delete
 
     get "/rubrics/:rubric_id/news", NewsController, :list
     get "/rubrics/:rubric_id/news/:id", NewsController, :show
     put "/rubrics/:rubric_id/news", NewsController, :create
     put "/rubrics/:rubric_id/news/:id", NewsController, :update
-
+    
+    get "/subscribers", SubscriberController, :list
+    get "/subscribers/_names", SubscriberController, :list_names
+    get "/subscribers/_groups", SubscriberController, :list_groups
+    get "/subscribers/_count", SubscriberController, :count
+    get "/subscribers/_my", SubscriberController, :my
+    get "/subscribers/_my_count", SubscriberController, :my_count
+    get "/subscribers/:id", SubscriberController, :show
+    put "/subscribers", SubscriberController, :create
+    delete "/subscribers/:id", SubscriberController, :delete
+    
     get "/api/status", StatusController, :status
     get "/api/statistics", StatisticsController, :statistics
   end
