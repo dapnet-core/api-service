@@ -75,6 +75,15 @@ defmodule DapnetWeb.Router do
     put "/subscribers", SubscriberController, :create
     delete "/subscribers/:id", SubscriberController, :delete
     
+    get "/nodes", NodeController, :list
+    get "/nodes/_names", NodeController, :list_names
+    get "/nodes/_count", NodeController, :count
+    get "/nodes/_my", NodeController, :my
+    get "/nodes/_my_count", NodeController, :my_count
+    get "/nodes/:id", NodeController, :show
+    put "/nodes", NodeController, :create
+    delete "/nodes/:id", NodeController, :delete
+    
     get "/api/status", StatusController, :status
     get "/api/statistics", StatisticsController, :statistics
   end
