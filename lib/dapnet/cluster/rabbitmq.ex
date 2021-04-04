@@ -3,7 +3,7 @@ defmodule Dapnet.Cluster.RabbitMQ do
   use AMQP
   require Logger
 
-  def start_link do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 

@@ -4,7 +4,7 @@ defmodule Dapnet.Scheduler.Rubrics do
   def update_queue, do: GenServer.call(__MODULE__, :update_queue, 10000)
   def run_queue, do: GenServer.call(__MODULE__, :run_queue, 30000)
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 

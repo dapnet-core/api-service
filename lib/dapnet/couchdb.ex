@@ -6,7 +6,7 @@ defmodule Dapnet.CouchDB do
   def auth({:user, user, password}), do: GenServer.call(__MODULE__, {:auth_user, user, password})
   def auth({:node, node, auth_key}), do: GenServer.call(__MODULE__, {:auth_node, node, auth_key})
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 

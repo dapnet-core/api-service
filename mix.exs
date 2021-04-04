@@ -20,7 +20,7 @@ defmodule Dapnet.MixProject do
   def application do
     [
       mod: {Dapnet.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :poison, :httpoison, :runtime_tools]
     ]
   end
 
@@ -37,20 +37,20 @@ defmodule Dapnet.MixProject do
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_dashboard, "~> 0.2.0"},
+      {:phoenix_live_dashboard, "~> 0.4.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:amqp, "~> 1.4.2"},
-      {:httpoison, "~> 1.6.2"},
-      {:quantum, "~> 2.4"},
+      {:amqp, "~> 2.1.1"},
+      {:httpoison, "~> 1.8.0"},
+      {:quantum, "~> 3.3"},
       {:timex, "~> 3.1"},
       {:couchdb, github: "7h0ma5/elixir-couchdb"},
       {:bcrypt_elixir, "~> 2.2"},
       {:ex_json_schema, "~> 0.7"},
       {:elixir_uuid, "~> 1.2"},
-      {:gproc, "~> 0.8.0"}
+      {:gproc, "~> 0.9.0"}
     ]
   end
 

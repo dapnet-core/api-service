@@ -7,7 +7,7 @@ defmodule Dapnet.Transmitter.RabbitMQ do
   @exchange "dapnet.telemetry"
   @queue "transmitter_service"
 
-  def start_link do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 

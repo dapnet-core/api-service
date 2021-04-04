@@ -6,7 +6,7 @@ defmodule Dapnet.Cluster.Discovery do
   def reachable_nodes, do: GenServer.call(__MODULE__, :reachable_nodes)
   def update, do: GenServer.call(__MODULE__, :update)
 
-  def start_link do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
 
@@ -36,16 +36,16 @@ defmodule Dapnet.Cluster.Discovery do
     requests = Enum.map(nodes, fn {node, params} ->
       host = params["host"]
 
-      %HTTPoison.AsyncResponse{:id => id} = HTTPoison.post!("#{host}/cluster/discovery", body,
-        [{"content-type", "application/json"}],
-        [
-          recv_timeout: 5000,
-          timeout: 5000,
-          stream_to: self()
-        ])
-
-      {id, node}
+      case HTTPoison.post("#{host}/cluster/discovery", body,
+          [{"content-type", "application/json"}],
+          [recv_timeout: 5000, timeout: 5000, stream_to: self()]) do
+        {:ok, %HTTPoison.AsyncResponse{:id => id}} -> {id, node}
+        _ -> 
+          Logger.warn("Could not reach #{node}!")
+          nil
+      end
     end)
+    |> Enum.reject(&is_nil/1)
     |> Map.new()
     |> Map.merge(requests)
 

@@ -17,28 +17,25 @@ defmodule Dapnet.Application do
       {Phoenix.PubSub, name: Dapnet.PubSub},
       # Start the Endpoint (http/https)
       DapnetWeb.Endpoint,
-      # Start a worker by calling: Dapnet.Worker.start_link(arg)
-      # {Dapnet.Worker, arg}
-      worker(Dapnet.CouchDB, [], restart: :permanent),
 
-      worker(Dapnet.Cluster.RabbitMQ, [], restart: :permanent),
-      worker(Dapnet.Cluster.Discovery, [], restart: :permanent),
-      worker(Dapnet.Cluster.CouchDB, [], restart: :permanent),
+      {Dapnet.CouchDB, restart: :permanent},
 
-      worker(Dapnet.Call.RabbitMQ, [], restart: :permanent),
-      worker(Dapnet.Call.Dispatcher, [], restart: :permanent),
+      {Dapnet.Cluster.RabbitMQ, restart: :permanent},
+      {Dapnet.Cluster.Discovery, restart: :permanent},
+      {Dapnet.Cluster.CouchDB, restart: :permanent},
 
-      worker(Dapnet.Transmitter.RabbitMQ, [], restart: :permanent),
+      {Dapnet.Call.RabbitMQ, restart: :permanent},
+      {Dapnet.Call.Dispatcher, restart: :permanent},
 
-      worker(Dapnet.Telemetry.Consumer, [], restart: :permanent),
-      worker(Dapnet.Telemetry.Database, [], restart: :permanent),
+      {Dapnet.Transmitter.RabbitMQ, restart: :permanent},
 
-      worker(Dapnet.Scheduler.Rubrics, [], restart: :permanent),
-      worker(Dapnet.Scheduler, [])
+      {Dapnet.Telemetry.Consumer, restart: :permanent},
+      {Dapnet.Telemetry.Database, restart: :permanent},
+
+      {Dapnet.Scheduler.Rubrics, restart: :permanent},
+      Dapnet.Scheduler
     ]
-
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    
     opts = [strategy: :one_for_one, name: Dapnet.Supervisor]
     Supervisor.start_link(children, opts)
   end

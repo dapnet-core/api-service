@@ -9,7 +9,7 @@ defmodule Dapnet.Cluster.CouchDB do
   def db(name), do: GenServer.call(__MODULE__, {:db, name})
   def auth(node, auth_key), do: GenServer.call(__MODULE__, {:auth, node, auth_key})
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, {}, [name: __MODULE__])
   end
 
