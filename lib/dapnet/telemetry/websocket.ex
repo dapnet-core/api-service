@@ -18,7 +18,6 @@ defmodule Dapnet.Telemetry.Websocket do
   end
 
   def websocket_init(state) do
-
     case state do
       {type, id} ->
         :gproc.reg({:p, :l, state})
@@ -73,7 +72,7 @@ defmodule Dapnet.Telemetry.Websocket do
         states = to_subscribe
         |> Enum.map(fn id ->
           result = Dapnet.Telemetry.Database.lookup({mtype, id})
-
+        
           if result do
             {:text, Poison.encode!(result)}
           end

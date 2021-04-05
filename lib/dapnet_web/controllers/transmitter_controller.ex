@@ -124,6 +124,15 @@ defmodule DapnetWeb.TransmitterController do
       json(conn, result)
     end
   end
+  
+  def telemetry(conn, %{"id" => id} = params) do
+    IO.inspect id
+    if telemetry = Dapnet.Telemetry.Database.lookup({:transmitter, id}) do
+      json(conn, telemetry)
+    else
+      json(conn, %{})
+    end
+  end
 
   def list_groups(conn, _params) do
     options = %{"group_level" => 5}
