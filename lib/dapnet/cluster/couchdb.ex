@@ -86,12 +86,11 @@ defmodule Dapnet.Cluster.CouchDB do
 
     @databases
     |> Enum.each(fn db ->
-      local_url = CouchDB.Server.url(server, "/#{db}")
       remote_url = "http://#{user}:#{auth_key}@#{host}:5984/#{db}"
 
       options = [create_target: false, continuous: true]
 
-      result = CouchDB.Server.replicate(server, remote_url, local_url, options)
+      CouchDB.Server.replicate(server, remote_url, db, options)
 
       Logger.debug "Replication status: #{inspect remote_url}"
     end)
