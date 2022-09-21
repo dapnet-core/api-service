@@ -9,36 +9,45 @@ defmodule DapnetWeb.CallController do
   plug :permission_required, "call.show" when action in [:read]
   plug :permission_required, "call.create" when action in [:create]
 
-  def sort(query, params)
-  def sort(query, %{"desc" => "1", "sortBy" => "created_at"} = _params) do
-    query |> Ecto.Query.order_by(desc: :created_at)
+  def getOrder(params)
+  def getOrder(%{"desc" => "1", "sortBy" => "created_at"} = _params) do
+    [desc: :created_at]
   end
-  def sort(query, %{"desc" => "0", "sortBy" => "created_at"} = _params) do
-    query |> Ecto.Query.order_by(asc: :created_at)
+  def getOrder(%{"desc" => "0", "sortBy" => "created_at"} = _params) do
+    [asc: :created_at]
   end
-  def sort(query, %{"desc" => "1", "sortBy" => col} = _params) do
-    query |> Ecto.Query.order_by([{:desc, ^String.to_existing_atom(col)}, {:desc, :created_at}])
+  def getOrder(%{"desc" => "1", "sortBy" => col} = _params) do
+    [{:desc, String.to_existing_atom(col)}, {:desc, :created_at}]
   end
-  def sort(query, %{"desc" => "0", "sortBy" => col} = _params) do
-    query |> Ecto.Query.order_by([{:asc, ^String.to_existing_atom(col)}, {:desc, :created_at}])
+  def getOrder(%{"desc" => "0", "sortBy" => col} = _params) do
+    [{:asc, String.to_existing_atom(col)}, {:desc, :created_at}]
   end
-  def sort(query, _params) do
-    query |> Ecto.Query.order_by(desc: :created_at)
+  def getOrder(_params) do
+    [desc: :created_at]
+  end
+
+  def applyCursor(list, params)
+  def applyCursor(list, %{"before" => before} = _params) do
+    list ++ [before: before]
+  end
+  def applyCursor(list, %{"after" => cursor} = _params) do
+    list ++ [after: cursor]
+  end
+  def applyCursor(list, _params) do
+    list
   end
 
   def index(conn, params) do
-    limit = Map.get(params, "limit", 20)
-    cursor_fields = if Map.has_key?(params, "sortBy") do
-      [String.to_existing_atom(Map.get(params, "sortBy")), :created_at, :id]
-    else
-      [:created_at, :id]
-    end
-    # filter
+    limit = Map.get(params, "limit", "20") |> Integer.parse |> elem(0)
+    orderFields = getOrder(params) ++ [desc: :id]
+    paginationArgs = [
+      cursor_fields: Enum.map(orderFields, fn {ord, col} -> {col, ord} end),
+      limit: limit] |> applyCursor(params)
+    # TODO: implement filter
 
     calls = Call
-    |> sort(params)
-    |> Ecto.Query.order_by(desc: :id)
-    |> Repo.paginate(cursor_fields: cursor_fields, limit: limit)
+    |> Ecto.Query.order_by(^orderFields)
+    |> Repo.paginate(paginationArgs)
     json(conn, calls)
   end
 
