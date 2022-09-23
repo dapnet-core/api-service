@@ -4,7 +4,7 @@ defmodule DapnetWeb.UserController do
 
   action_fallback DapnetWeb.FallbackController
 
-  plug :permission_required, "user.list" when action in [:list, :list_names, :count, :avatar]
+  plug :permission_required, "user.list" when action in [:list, :list_names, :avatar]
   plug :permission_required, "user.create" when action in [:create]
   plug :permission_required, "user.update" when action in [:update]
   plug :permission_required, "user.delete" when action in [:delete]
@@ -23,13 +23,13 @@ defmodule DapnetWeb.UserController do
       json(conn, users)
     end
   end
-  
+
   def list_usernames(conn, _params) do
     with {:ok, result} <- db_list("usernames", "byId", %{"reduce" => false}) do
       json(conn, result)
     end
   end
-  
+
   def count(conn, _params) do
     options = %{"reduce" => true}
 
@@ -38,14 +38,14 @@ defmodule DapnetWeb.UserController do
       json(conn, %{count: count})
     end
   end
-  
+
   def show(conn, %{"id" => id} = params) do
     with {:ok, user} <- db_get(id) do
       user = user |> Map.delete("password")
       json(conn, user)
     end
   end
-  
+
   def avatar(conn, %{"id" => id} = params) do
     with {:ok, avatar} <- db_get_attachment(id, "avatar.jpg") do
       conn
@@ -65,7 +65,7 @@ defmodule DapnetWeb.UserController do
 
           {:ok, old_user} = Database.get(db(), id)
           old_user = old_user |> Jason.decode!
-          
+
           user
           |> Map.put("created_at", Map.get(old_user, "created_at"))
           |> Map.put("created_by", Map.get(old_user, "created_by"))

@@ -8,7 +8,7 @@ defmodule DapnetWeb.TransmitterController do
   action_fallback DapnetWeb.FallbackController
 
   plug :permission_required, "transmitter.list" when action in [:list, :list_names, :map, :my]
-  plug :permission_required, "transmitter.read" when action in [:show, :my_count, :count]
+  plug :permission_required, "transmitter.read" when action in [:show, :my_count]
   plug :permission_required, "transmitter.create" when action in [:create]
   plug :permission_required, "transmitter.update" when action in [:update]
   plug :permission_required, "transmitter.delete" when action in [:delete]
@@ -124,7 +124,7 @@ defmodule DapnetWeb.TransmitterController do
       json(conn, result)
     end
   end
-  
+
   def telemetry(conn, %{"id" => id} = params) do
     IO.inspect id
     if telemetry = Dapnet.Telemetry.Database.lookup({:transmitter, id}) do
