@@ -84,12 +84,12 @@ defmodule Dapnet.Cluster.CouchDB do
     user = params["couchdb"]["user"]
     auth_key = params["couchdb"]["password"]
 
-    @databases
-    |> Enum.each(fn db ->
+    @databases |> Enum.each(fn db ->
       remote_url = "http://#{user}:#{auth_key}@#{host}:5984/#{db}"
 
       options = [create_target: false, continuous: true]
 
+      # FIXME: Passing the 'raw' database without URL is deprecated, see https://docs.couchdb.org/en/stable/api/server/common.html#api-server-replicate
       CouchDB.Server.replicate(server, remote_url, db, options)
 
       Logger.debug "Replication status: #{inspect remote_url}"
