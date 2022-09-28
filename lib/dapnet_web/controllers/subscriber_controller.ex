@@ -108,11 +108,15 @@ defmodule DapnetWeb.SubscriberController do
   def my_count(conn, _params) do
     options = %{"reduce" => true}
     |> Map.put("startkey", Jason.encode!(conn.assigns[:login][:user]["_id"]))
+    # "\ufff0" -> See https://docs.couchdb.org/en/latest/ddocs/views/collation.html#raw-collation
     |> Map.put("endkey", Jason.encode!(conn.assigns[:login][:user]["_id"] <> "\ufff0"))
 
     with {:ok, result} <- db_view("byOwners", options) do
-      count = result |> Map.get("rows") |> List.first |> Map.get("value")
-      json(conn, %{count: count})
+      with [head | _tail] <- Map.get(result, "rows") do
+        json(conn, %{count: Map.get(head, "value")})
+      else # "rows" is empty
+        _rows -> json(conn, %{count: 0})
+      end
     end
   end
 end
